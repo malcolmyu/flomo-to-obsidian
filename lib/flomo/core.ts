@@ -1,100 +1,104 @@
 import { parse, HTMLElement } from 'node-html-parser';
+import { HIGHLIGHT_PLACEHOLDER } from './const';
 //import { NodeHtmlMarkdown} from 'node-html-markdown';
-import turndown from 'turndown';
+import turndown, { TagName } from 'turndown';
 import DOMPurify from 'dompurify';
 
 export class FlomoCore {
-    memos: Record<string, string>[];
-    tags: string[];
-    files: Record<string, string[]>;
+  memos: Record<string, string>[];
+  tags: string[];
+  files: Record<string, string[]>;
 
-    constructor(flomoData: string) {
-        //const root = parse(DOMPurify.sanitize(flomoData));
-        const root = parse(flomoData);
-        this.memos = this.loadMemos(root.querySelectorAll(".memo"));
-        this.tags = this.loadTags(root.getElementById("tag").querySelectorAll("option"));
-        this.files = {};
-    }
+  constructor(flomoData: string) {
+    //const root = parse(DOMPurify.sanitize(flomoData));
+    const root = parse(flomoData);
+    this.memos = this.loadMemos(root.querySelectorAll('.memo'));
+    this.tags = this.loadTags(root.getElementById('tag')!.querySelectorAll('option'));
+    this.files = {};
+  }
 
-    private loadMemos(memoNodes: Array<HTMLElement>): Record<string, string>[] {
+  private loadMemos(memoNodes: Array<HTMLElement>): Record<string, string>[] {
+    const res: Record<string, string>[] = [];
+    const extractTitle = (item: string) => {
+      return item.replace(/(-|:|\s)/gi, '_');
+    };
+    const extractContent = (content: string) => {
+      //return NodeHtmlMarkdown.translate(content, {bulletMarker: '-',}).replace('\[', '[').replace('\]', ']')
+      //return NodeHtmlMarkdown.translate(content, {bulletMarker: '-',}).replace('\[', '[').replace('\]', ']')
+      //return (new showdown.Converter({metadata: false})).makeMarkdown(content)
+      //return NodeHtmlMarkdown.translate(content, {bulletMarker: '-'})
+      const td = new turndown({ bulletListMarker: '-' });
+      //const p_rule = {
+      //    filter: 'p',
+      //    replacement: function (content) {
+      //      return '\n' + content + '\n'
+      //    }
+      //  }
+      const liRule = {
+        filter: 'li' as TagName,
 
-        const res: Record<string, string>[] = [];
-        const extrtactTitle = (item: string) => { return item.replace(/(-|:|\s)/gi, "_") }
-        const extractContent = (content: string) => {
-            //return NodeHtmlMarkdown.translate(content, {bulletMarker: '-',}).replace('\[', '[').replace('\]', ']')
-            //return NodeHtmlMarkdown.translate(content, {bulletMarker: '-',}).replace('\[', '[').replace('\]', ']')
-            //return (new showdown.Converter({metadata: false})).makeMarkdown(content)
-            //return NodeHtmlMarkdown.translate(content, {bulletMarker: '-'})
-            const td = new turndown({bulletListMarker: '-'});
-            //const p_rule = {
-            //    filter: 'p',
-            //    replacement: function (content) {
-            //      return '\n' + content + '\n'
-            //    }
-            //  }
-            const liRule = {
-                filter: 'li',
-              
-                replacement: function (content, node, options) {
-                  content = content
-                    .replace(/^\n+/, '') // remove leading newlines
-                    .replace(/\n+$/, '\n') // replace trailing newlines with just a single one
-                    .replace(/\n/gm, '\n    ') // indent
-                    //.replace(/\<p\>/gi, '')
-                    //.replace(/\<\/p\>/gi, '')
-                  var prefix = options.bulletListMarker + ' '
-                  var parent = node.parentNode
-                  if (parent.nodeName === 'OL') {
-                    var start = parent.getAttribute('start')
-                    var index = Array.prototype.indexOf.call(parent.children, node)
-                    prefix = (start ? Number(start) + index : index + 1) + '.  '
-                  }
-                  return (
-                    prefix + content + (node.nextSibling && !/\n$/.test(content) ? '\n' : '')
-                  )
-                }
-              }
-              
-            td.addRule('listItem', liRule);
-
-            return td.turndown(content).replace(/\\\[/g, '[')
-                                       .replace(/\\\]/g, ']')
-                                        //replace(/\\#/g, '#')
-                                       .replace(/!\[\]\(file\//gi, "\n![](flomo/")
-                                        //.replace(/\<\!--\s--\>/g, '')
-                                        //.replace(/^\s*[\r\n]/gm,'')
-                                        //.replace(/!\[null\]\(<file\//gi, "\n![](<flomo/");
+        replacement: function (content: string, node: any, options: any) {
+          content = content
+            .replace(/^\n+/, '') // remove leading newlines
+            .replace(/\n+$/, '\n') // replace trailing newlines with just a single one
+            .replace(/\n/gm, '\n    '); // indent
+          //.replace(/\<p\>/gi, '')
+          //.replace(/\<\/p\>/gi, '')
+          var prefix = options.bulletListMarker + ' ';
+          var parent = node.parentNode;
+          if (parent.nodeName === 'OL') {
+            var start = parent.getAttribute('start');
+            var index = Array.prototype.indexOf.call(parent.children, node);
+            prefix = (start ? Number(start) + index : index + 1) + '.  ';
+          }
+          return prefix + content + (node.nextSibling && !/\n$/.test(content) ? '\n' : '');
         }
+      };
 
-        memoNodes.forEach(i => {
-            const dateTime = i.querySelector(".time").textContent;
-            const title = extrtactTitle(dateTime);
+      td.addRule('listItem', liRule);
 
-            // @Mar-31, 2024 Fix: #20 - Support <mark>.*?<mark/>
-            const contentBody = i.querySelector(".content").innerHTML.replaceAll("<mark>", "FLOMOIMPORTERHIGHLIGHTMARKPLACEHOLDER").replaceAll("</mark>", "FLOMOIMPORTERHIGHLIGHTMARKPLACEHOLDER");
-            const contentFile = i.querySelector(".files").innerHTML
+      return td
+        .turndown(content)
+        .replace(/\\\[/g, '[')
+        .replace(/\\\]/g, ']')
+        //replace(/\\#/g, '#')
+        .replace(/!\[\]\(file\//gi, '\n![](flomo/')
+      //.replace(/\<\!--\s--\>/g, '')
+      //.replace(/^\s*[\r\n]/gm,'')
+      //.replace(/!\[null\]\(<file\//gi, "\n![](<flomo/");
+    };
 
-            const content = extractContent(contentBody) + "\n" + extractContent(contentFile);
+    memoNodes.forEach((i) => {
+      const dateTime = i.querySelector('.time')!.textContent;
+      const title = extractTitle(dateTime);
 
-            res.push({
-                "title": title,
-                "date": dateTime.split(" ")[0],
-                "content": "📅 [[" + dateTime.split(" ")[0] + "]]"+ " " + dateTime.split(" ")[1] + "\n\n" + content,
-            })
+      // @Mar-31, 2024 Fix: #20 - Support <mark>.*?<mark/>
+      const contentBody = i
+        .querySelector('.content')!
+        .innerHTML.replaceAll('<mark>', HIGHLIGHT_PLACEHOLDER)
+        .replaceAll('</mark>', HIGHLIGHT_PLACEHOLDER);
+      const contentFile = i.querySelector('.files')!.innerHTML;
 
-        });
+      const content = extractContent(contentBody) + '\n' + extractContent(contentFile);
 
-        return res;
-    }
+      res.push({
+        title: title,
+        date: dateTime.split(' ')[0],
+        content:
+          '📅 [[' + dateTime.split(' ')[0] + ']]' + ' ' + dateTime.split(' ')[1] + '\n\n' + content
+      });
+    });
 
-    private loadTags(tagNodes: Array<HTMLElement>): string[] {
-        const res: string[] = [];
+    return res;
+  }
 
-        tagNodes.slice(1).forEach(i => { res.push(i.textContent); })
+  private loadTags(tagNodes: Array<HTMLElement>): string[] {
+    const res: string[] = [];
 
-        return res;
+    tagNodes.slice(1).forEach((i) => {
+      res.push(i.textContent);
+    });
 
-    }
-
-
+    return res;
+  }
 }

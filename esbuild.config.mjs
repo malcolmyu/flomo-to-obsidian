@@ -1,6 +1,10 @@
 import esbuild from "esbuild";
 import process from "process";
+import fs from 'fs';
+import path from 'path';
 import builtins from 'builtin-modules'
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
 const banner =
 `/*
@@ -10,33 +14,57 @@ if you want to view the source, please visit the github repository of this plugi
 `;
 
 const prod = (process.argv[2] === 'production');
+const outDir = 'flomo-sync';
 
-esbuild.build({
-	banner: {
-		js: banner,
-	},
-	entryPoints: ['main.ts'],
-	bundle: true,
-	external: [
-		'obsidian',
-		'electron',
-		'@codemirror/autocomplete',
-		'@codemirror/collab',
-		'@codemirror/commands',
-		'@codemirror/language',
-		'@codemirror/lint',
-		'@codemirror/search',
-		'@codemirror/state',
-		'@codemirror/view',
-		'@lezer/common',
-		'@lezer/highlight',
-		'@lezer/lr',
-		...builtins],
-	format: 'cjs',
-	watch: !prod,
-	target: 'es2018',
-	logLevel: "info",
-	sourcemap: prod ? false : 'inline',
-	treeShaking: true,
-	outfile: 'main.js',
-}).catch(() => process.exit(1));
+// Ensure output directory exists
+if (!fs.existsSync(outDir)) {
+  fs.mkdirSync(outDir, { recursive: true });
+}
+
+async function runBuild() {
+  try {
+    await esbuild.build({
+      banner: { js: banner },
+      entryPoints: ['main.ts'],
+      bundle: true,
+      platform: 'node',
+      external: [
+        'obsidian',
+        'electron',
+        '@codemirror/autocomplete',
+        '@codemirror/collab',
+        '@codemirror/commands',
+        '@codemirror/language',
+        '@codemirror/lint',
+        '@codemirror/search',
+        '@codemirror/state',
+        '@codemirror/view',
+        '@lezer/common',
+        '@lezer/highlight',
+        '@lezer/lr',
+        ...builtins
+      ],
+      format: 'cjs',
+      target: 'es2018',
+      logLevel: 'info',
+      sourcemap: prod ? false : 'inline',
+      treeShaking: true,
+      outfile: `${outDir}/main.js`,
+    });
+
+    // Copy assets into flomo-sync on production builds
+    if (prod) {
+      const assets = ['styles.css', 'manifest.json'];
+      for (const f of assets) {
+        if (fs.existsSync(f)) {
+          fs.copyFileSync(f, `${outDir}/${f}`);
+        }
+      }
+    }
+  } catch (e) {
+    console.error(e);
+    process.exit(1);
+  }
+}
+
+runBuild();

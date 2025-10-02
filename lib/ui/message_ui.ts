@@ -1,28 +1,25 @@
 import { App, Modal, Plugin, Setting, Notice } from 'obsidian';
 
-
 export class MessageUI extends Modal {
-    message: string;
+  message: string;
 
-    constructor(app: App, msg: string) {
-        super(app);
-        this.message = msg;
-    }
+  constructor(app: App, msg: string) {
+    super(app);
+    this.message = msg;
+  }
 
-    onOpen() {
+  onOpen() {
+    const { contentEl } = this;
+    contentEl.empty();
+    contentEl.createEl('h5', { text: this.message });
 
-        const { contentEl } = this;
-        contentEl.empty();
-        contentEl.createEl("h5", { text: this.message });
-            
-        new Setting(contentEl)
-        .addButton((btn) => {
-            btn.setButtonText("Ok")
-                .setCta()
-                .onClick(async () => {
-                    this.close();
-                })
+    new Setting(contentEl).addButton((btn) => {
+      btn
+        .setButtonText('Ok')
+        .setCta()
+        .onClick(async () => {
+          this.close();
         });
-
-    }
+    });
+  }
 }

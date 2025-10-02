@@ -1,10 +1,10 @@
 {
-	"id": "flomo-importer",
-	"name": "Flomo Importer",
+	"id": "flomo-sync",
+	"name": "Flomo Sync",
 	"version": "1.3.1",
 	"minAppVersion": "1.5.0",
 	"description": "Make Flomo Memos to Obsidian Notes",
-	"author": "Jialu Y",
+	"author": "Malcolm Yu",
 	"authorUrl": "https://github.com/jia6y",
 	"isDesktopOnly": true
 }
