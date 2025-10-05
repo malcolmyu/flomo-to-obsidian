@@ -15,7 +15,10 @@
     "eqeqeq": "error",
     "no-var": "error",
     "prefer-const": "warn",
-    "curly": "error",
+    "curly": [
+      "error",
+      "multi-line"
+    ],
     "no-console": "warn",
     // ignore unused variables/args prefixed with underscore
     "no-unused-vars": "off",

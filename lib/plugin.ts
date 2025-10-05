@@ -26,14 +26,15 @@ export const DEFAULT_SETTINGS: MyPluginSettings = {
 
 export default class FlomoImporterPlugin extends Plugin {
   settings!: MyPluginSettings;
+  mainUI!: Modal;
 
   async onload() {
     await this.loadSettings();
-    const mainUI: Modal = new MainUI(this.app, this);
+    this.mainUI = new MainUI(this.app, this);
 
     addIcon('target', LOGO_SVG);
     const ribbonIconEl = this.addRibbonIcon('target', 'Flomo Importer', () => {
-      mainUI.open();
+      this.mainUI.open();
     });
 
     ribbonIconEl.addClass('my-plugin-ribbon-class');
@@ -43,7 +44,7 @@ export default class FlomoImporterPlugin extends Plugin {
       id: 'open-flomo-importer',
       name: 'Open Flomo Importer',
       callback: () => {
-        mainUI.open();
+        this.mainUI.open();
       }
     });
   }

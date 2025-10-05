@@ -36,3 +36,220 @@ If your plugin does not need CSS, delete this file.
     vertical-align: middle;
     margin: 0 0 10px;
 }
+
+/* React UI enhanced styles */
+.flomo-react-modal {
+    padding: 8px 12px;
+}
+.react-flomo h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-normal);
+}
+.section-title {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-normal);
+}
+.react-flomo {
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.setting-block {
+    padding: 12px 0;
+    border-top: 1px solid var(--background-modifier-border);
+}
+.setting-block:first-of-type {
+    border-top: none;
+}
+.setting-small {
+    font-size: 12px !important;
+    color: var(--text-muted);
+}
+.file-dropzone {
+    border: 2px dashed var(--background-modifier-border);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+.file-dropzone:hover {
+    border-color: var(--interactive-accent);
+    background: var(--background-secondary);
+}
+.file-btn {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+}
+.file-name {
+    color: var(--text-muted);
+}
+.canvasOptionBlock label {
+    margin-right: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.actions-row {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    align-items: center;
+}
+/* Vault folder tree selector */
+.folder-tree {
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 8px;
+    padding: 8px;
+    max-height: 220px;
+    overflow: auto;
+    background: var(--background-secondary);
+}
+.folder-node { margin: 2px 0; }
+.folder-item {
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.folder-toggle {
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+.folder-toggle:hover { color: var(--text-normal); }
+.folder-toggle.placeholder { visibility: hidden; }
+.folder-item:hover { background: var(--background-modifier-hover); }
+.folder-item.selected {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+.folder-children { margin-left: 12px; border-left: 1px dashed var(--background-modifier-border); }
+/* Folder search */
+.folder-search-row { display: flex; margin-bottom: 6px; }
+.folder-search {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    background: var(--background-secondary);
+    color: var(--text-normal);
+}
+.folder-search:focus { outline: none; border-color: var(--interactive-accent); }
+
+/* Combobox dropdown */
+.folder-combobox { position: relative; display: inline-block; }
+.folder-dropdown {
+    position: absolute;
+    right: 0;
+    left: auto;
+    top: calc(100% + 4px);
+    z-index: 10;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 8px;
+    background: var(--background-secondary);
+    padding: 6px;
+    max-height: 240px;
+    overflow: auto;
+    box-shadow: var(--shadow-s);
+    /* Make dropdown wider than input when needed */
+    min-width: 420px;
+    max-width: 720px;
+    width: auto;
+}
+/* Widen input field in combobox context */
+.folder-combobox .folder-search { min-width: 300px; }
+/* Generic buttons with subtle motion */
+.btn {
+    font-size: 15px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform .08s ease, box-shadow .2s ease, background-color .2s ease, opacity .2s ease;
+}
+.btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Progress UI */
+.progress-block { margin-top: 8px; margin-bottom: 12px; }
+.progress-line-wrapper { position: relative; height: 6px; margin-bottom: 8px; }
+.progress-track {
+  width: 100%; height: 8px; border-radius: 999px; overflow: hidden;
+  background: #d0d6e0;
+}
+.progress-fill {
+  height: 100%; border-radius: 999px; position: relative;
+  background: linear-gradient(90deg, #236BFF 0%, #1AA7FF 50%, #00D5FF 100%);
+  transition: width .25s ease;
+}
+.progress-shimmer {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.55) 20%, rgba(255,255,255,0) 40%);
+  background-size: 160px 100%; opacity: .35;
+  animation: progress-sweep 1.2s linear infinite;
+}
+@keyframes progress-sweep { from { background-position: -80px 0; } to { background-position: 160px 0; } }
+.progress-text { margin-top: 2px; color: var(--text-muted); font-size: 12px; line-height: 16px; }
+.btn:active { transform: translateY(1px); }
+.btn-primary {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+.btn-primary:hover { filter: brightness(1.05); }
+.btn-secondary {
+    background: var(--background-modifier-hover);
+    color: var(--text-normal);
+}
+.btn-secondary:hover {
+  background: var(--background-modifier-active);
+}
+.btn-accent {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+    opacity: .9;
+}
+.btn-accent:hover { opacity: 1; }
+
+/* Auth view */
+.react-auth { max-width: 640px; }
+.auth-card {
+    padding: 12px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 10px;
+    background: var(--background-secondary);
+}
+.auth-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.auth-input {
+    padding: 6px 10px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    background: var(--background-secondary);
+    color: var(--text-normal);
+}
+.auth-input:focus {
+    outline: none;
+    border-color: var(--interactive-accent);
+}
+.caption { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
